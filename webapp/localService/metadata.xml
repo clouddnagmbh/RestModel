@@ -1,0 +1,27 @@
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+	<edmx:DataServices m:DataServiceVersion="2.0">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZHOFIO_CUSTOMER_SRV" xml:lang="en" sap:schema-version="1">
+			<EntityType Name="Customer" sap:content-version="1">
+				<Key><PropertyRef Name="CustomerId"/></Key><Property Name="CustomerId" Type="Edm.Guid" Nullable="false" sap:unicode="false" sap:label="UUID" sap:creatable="false"
+					sap:updatable="false"/><Property Name="Firstname" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:label="First name"/><Property Name="Lastname" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:label="Last name"/><Property Name="AcademicTitle" Type="Edm.String" MaxLength="20" sap:unicode="false" sap:label="Academic Title"/><Property Name="Phone" Type="Edm.String" MaxLength="30" sap:unicode="false" sap:label="Telephone"/><Property Name="Email" Type="Edm.String" MaxLength="132" sap:unicode="false" sap:label="E-mail" sap:sortable="false"/><Property Name="Gender" Type="Edm.String" MaxLength="1" sap:unicode="false" sap:label="Gender" sap:sortable="false"/><Property Name="Website" Type="Edm.String" MaxLength="64" sap:unicode="false" sap:label="Website" sap:sortable="false"
+					sap:filterable="false"/><NavigationProperty Name="Documents" Relationship="ZHOFIO_CUSTOMER_SRV.CustomerDocuments" FromRole="FromRole_CustomerDocuments"
+					ToRole="ToRole_CustomerDocuments"/></EntityType>
+			<EntityType Name="CustomerDocument" m:HasStream="true" sap:content-version="1">
+				<Key><PropertyRef Name="DocId"/></Key><Property Name="DocId" Type="Edm.Guid" Nullable="false" sap:unicode="false" sap:label="UUID" sap:updatable="false"/><Property Name="CustomerId" Type="Edm.Guid" Nullable="false" sap:unicode="false" sap:label="UUID"/><Property Name="DocumentName" Type="Edm.String" Nullable="false" MaxLength="257" sap:unicode="false" sap:label="File name"/><Property Name="DocumentType" Type="Edm.String" Nullable="false" MaxLength="128" sap:unicode="false" sap:label="MIME Type"/><Property Name="Content" Type="Edm.Binary" Nullable="false" sap:unicode="false" sap:label="Binary String" sap:sortable="false"
+					sap:filterable="false"/><Property Name="CreateTime" Type="Edm.Time" Precision="0" sap:unicode="false" sap:sortable="false" sap:filterable="false"/><Property Name="CreateDate" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:sortable="false" sap:filterable="false"/><Property Name="CreatedBy" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="User Name" sap:sortable="false"
+					sap:filterable="false"/></EntityType>
+			<Association Name="CustomerDocuments" sap:content-version="1"><End Type="ZHOFIO_CUSTOMER_SRV.Customer" Multiplicity="0..1" Role="FromRole_CustomerDocuments"/><End Type="ZHOFIO_CUSTOMER_SRV.CustomerDocument" Multiplicity="*" Role="ToRole_CustomerDocuments"/>
+				<ReferentialConstraint>
+					<Principal Role="FromRole_CustomerDocuments"><PropertyRef Name="CustomerId"/></Principal>
+					<Dependent Role="ToRole_CustomerDocuments"><PropertyRef Name="CustomerId"/></Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<EntityContainer Name="ZHOFIO_CUSTOMER_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx"><EntitySet Name="CustomerSet" EntityType="ZHOFIO_CUSTOMER_SRV.Customer" sap:content-version="1"/><EntitySet Name="CustomerDocumentSet" EntityType="ZHOFIO_CUSTOMER_SRV.CustomerDocument" sap:content-version="1"/>
+				<AssociationSet Name="CustomerDocumentsSet" Association="ZHOFIO_CUSTOMER_SRV.CustomerDocuments" sap:creatable="false" sap:updatable="false"
+					sap:deletable="false" sap:content-version="1"><End EntitySet="CustomerSet" Role="FromRole_CustomerDocuments"/><End EntitySet="CustomerDocumentSet" Role="ToRole_CustomerDocuments"/></AssociationSet>
+			</EntityContainer><atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="self"
+				href="https://virtual.s4dev:8001/sap/opu/odata/sap/ZHOFIO_CUSTOMER_SRV/$metadata"/><atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version"
+				href="https://virtual.s4dev:8001/sap/opu/odata/sap/ZHOFIO_CUSTOMER_SRV/$metadata"/></Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

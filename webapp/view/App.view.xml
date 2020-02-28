@@ -1,0 +1,7 @@
+<mvc:View controllerName="at.clouddna.axiostest.controller.App" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+	<Shell id="shell">
+		<App id="app">
+			<pages></pages>
+		</App>
+	</Shell>
+</mvc:View>

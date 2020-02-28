@@ -19,6 +19,11 @@
 			<codeeditor:CodeEditor id="codeeditor_body" type="json" width="100%" height="20%"/>
 			<Label text="Response"/>
 			<codeeditor:CodeEditor id="codeeditor_response" type="json" width="100%" height="50%"/>
+			<List items="{path: 'testClientModel>/CustomerSet', parameters: {sendGet: false}}">
+				<items>
+					<StandardListItem title="{testClientModel>Firstname}"/>
+				</items>
+			</List>
 		</content>
 	</Page>
 </mvc:View>

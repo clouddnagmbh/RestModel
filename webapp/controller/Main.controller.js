@@ -1,8 +1,9 @@
 /* global axios:true */
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
-	"at/clouddna/axiostest/libs/RestModel"
-], function (Controller, RestModel) {
+	"at/clouddna/axiostest/libs/RestModel",
+	"at/clouddna/axiostest/libs/TestClientModel"
+], function (Controller, RestModel, TestClientModel) {
 	"use strict";
 
 	return Controller.extend("at.clouddna.axiostest.controller.Main", {
@@ -13,6 +14,13 @@ sap.ui.define([
 				url: "https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/sap/opu/odata/sap/ZHOFIO_CUSTOMER_SRV/",
 				sendSkipTop: false,
 			});
+
+			let oModel = new TestClientModel(
+				"https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/sap/opu/odata/sap/ZHOFIO_CUSTOMER_SRV/", {
+					//initialLoadedEntities: ["CustomerSet"]
+				});
+
+			this.getView().setModel(oModel, "testClientModel");
 		},
 
 		onGetPress: function (oEvent) {

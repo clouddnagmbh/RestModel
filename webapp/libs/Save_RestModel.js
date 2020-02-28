@@ -28,8 +28,6 @@ sap.ui.define([
 		 * @param {boolean} [oConfig.xcsrfTokenHandling=true] - Request headers.
 		 */
 		constructor: function (oConfig) {
-			Object.call(this);
-
 			//if no configuration was provided, throw an exception
 			if (oConfig === undefined) {
 				throw new ReferenceError("ODataRestModel must be configured with a config-object");

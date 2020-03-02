@@ -49,10 +49,10 @@ sap.ui.define([
 
 			this._logger.info("Instance created");
 
-			//fetch the $metadata-object
+			//fetch the $metadata-object if available
 			this._loadMetadata();
 
-			//fetch x-csrf-token
+			//fetch x-csrf-token if available
 			this.setXCSRFTokenHandling(oConfig.hasOwnProperty("xcsrfTokenHandling") ? oConfig.xcsrfTokenHandling : true);
 		},
 
@@ -265,10 +265,11 @@ sap.ui.define([
 		 */
 		_loadMetadata: function () {
 			this._axiosInstance.get("/$metadata").then(function (oData) {
-
+					this.setMetadata(oData.data);
+					this._logger.info("METADATA - loaded");
 				}.bind(this),
 				function (oError) {
-
+					this._logger.info("METADATA - no metadata-file available");
 				}
 			);
 		},

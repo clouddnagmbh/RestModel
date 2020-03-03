@@ -19,9 +19,14 @@
 			<codeeditor:CodeEditor id="codeeditor_body" type="json" width="100%" height="20%"/>
 			<Label text="Response"/>
 			<codeeditor:CodeEditor id="codeeditor_response" type="json" width="100%" height="50%"/>
-			<List items="{path: 'testClientModel>/CustomerSet', parameters: {sendGet: false}}">
+			<Button text="submit changes" press="onSubmitChangesPress"/>
+			<Input id="input" value="{path: 'testClientModel>/CustomerSet/3/Firstname'}"/>
+			<List items="{path: 'testClientModel>/CustomerSet', parameters: {sendGet: true}}">
 				<items>
-					<StandardListItem title="{testClientModel>Firstname}"/>
+					<CustomListItem>
+						<Input value="{testClientModel>Firstname}"/>
+						<Input value="{testClientModel>Lastname}"/>
+					</CustomListItem>
 				</items>
 			</List>
 		</content>

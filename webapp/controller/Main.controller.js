@@ -8,6 +8,7 @@ sap.ui.define([
 
 	return Controller.extend("at.clouddna.axiostest.controller.Main", {
 		_oModel: null,
+		_oTestModel: null,
 
 		onInit: function () {
 			this._oModel = new RestModel({
@@ -15,12 +16,16 @@ sap.ui.define([
 				sendSkipTop: false,
 			});
 
-			let oModel = new TestClientModel(
+			this._oTestModel = new TestClientModel(
 				"https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/sap/opu/odata/sap/ZHOFIO_CUSTOMER_SRV/", {
-					//initialLoadedEntities: ["CustomerSet"]
+					initialLoadedEntities: ["CustomerSet"]
 				});
 
-			this.getView().setModel(oModel, "testClientModel");
+			this.getView().setModel(this._oTestModel, "testClientModel");
+		},
+
+		onSubmitChangesPress: function () {
+			this._oTestModel.submitLocalChanges();
 		},
 
 		onGetPress: function (oEvent) {

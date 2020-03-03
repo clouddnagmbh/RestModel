@@ -10,6 +10,8 @@ sap.ui.define([
 
 	return JSONModel.extend("at.clouddna.axiostest.libs.TestClientModel", {
 		_restModel: null,
+		_aChanges: [],
+		_oCopy: null,
 
 		constructor: function (sPath, oParameter) {
 			JSONModel.call(this);
@@ -37,24 +39,112 @@ sap.ui.define([
 					}.bind(this));
 				}
 			}
+			this.attachPropertyChange(function (oEvent) {
+				let oParameters = oEvent.getParameters(),
+					sPath = oParameters.path,
+					oValue = oParameters.value,
+					oChange = {};
+
+				if (this._oCopy === null) {
+					this._oCopy = JSON.parse(JSON.stringify(this.getData()));
+				}
+
+				if (oParameters.context) {
+					oChange = {
+						entity: oParameters.context.sPath,
+						property: "/" + sPath,
+						value: oValue
+					};
+				} else {
+					oChange = {
+						entity: sPath.slice(sPath.lastIndexOf("/"), sPath.length),
+						property: sPath.slice(0, sPath.lastIndexOf("/")),
+						value: oValue,
+					};
+				}
+
+				let oFound = this._aChanges.find(e => e.property === oChange.property && e.entity === oChange.entity);
+
+				if (oFound) {
+					oFound.value = oChange.value;
+				} else {
+					this._aChanges.push(oChange);
+				}
+
+				console.log(this._aChanges);
+			}.bind(this));
 		},
 
-		loadData: function (sPath) {
-			/*	this._restModel.read(sPath, {
-					success: function (oData) {
-						let oSetData = {
+		submitLocalChanges: function (oParameters) {
+			let bSendSingle = false;
+			if (oParameters) {
+				bSendSingle = oParameters.hasOwnProperty("sendSingle") ? oParameters.sendSingle : false;
+			}
 
-						}
-						this.setData(oData.data);
-					}.bind(this),
-					error: function (oE) {
+			let aSortedChanges = this._mapChanges();
 
-					}.bind(this)
-				});*/
+			//this._oCopy = null;
+			//this._aChanges = null;
 		},
 
-		/*getProperty: function (oEvent) {
+		_mapChanges: function () {
+			let aReturn = [];
 
+			this._aChanges.forEach(function (oChange) {
+				if (aReturn === []) {
+					let oProperty = {};
+					oProperty[oChange.property] = oChange.value;
+
+					aReturn.push({
+						entity: oChange.entity,
+						properties: oProperty
+					});
+				} else {
+					let oFound = aReturn.find(e => e.entity === oChange.entity);
+
+					if (oFound) {
+						oFound.properties[oChange.property] = oChange.value;
+					} else {
+						let oProperty = {};
+						oProperty[oChange.property] = oChange.value;
+
+						aReturn.push({
+							entity: oChange.entity,
+							properties: oProperty
+						});
+					}
+				}
+			}.bind(this));
+
+			return aReturn;
+		},
+
+		hasLocalChanges: function () {
+			return this._aChanges !== null;
+		},
+
+		resetLocalChanges: function () {
+			this.setData(JSON.parse(JSON.stringify(this._oCopy)));
+			this._oCopy = null;
+			this._aChanges = null;
+		},
+
+		/*bindProperty: function (sPath, oContext, aSorters, aFilters, mParameters) {
+				let oPropertyBinding = new sap.ui.model.json.JSONPropertyBinding(this, sPath, oContext, aSorters, aFilters, mParameters);
+				var oParameters = aSorters;
+
+				if (oParameters) {
+					if (oParameters.hasOwnProperty("instantSubmit") ? oParameters.instantSubmit : false) {
+						oPropertyBinding.attachChange(function (oEvent) {
+							let oDataState = oEvent.getSource().oDataState;
+
+							if (oDataState.hasOwnProperty("mProperties") && oDataState.hasOwnProperty("mChangedProperties")) {
+								console.log("changed")
+							}
+						}.bind(this));
+					}
+				}
+				return oPropertyBinding;
 		},*/
 
 		refreshEntitySet: function (sPath) {

@@ -1,55 +1,56 @@
 {
-  "welcomeFile": "/webapp/index.html",
-  "routes": [
-    {
-      "path": "/resources",
-      "target": {
-        "type": "service",
-        "name": "sapui5",
-        "entryPath": "/resources",
-        "version": "1.71.13"
-      },
-      "description": "SAPUI5 Resources"
-    },
-    {
-      "path": "/test-resources",
-      "target": {
-        "type": "service",
-        "name": "sapui5",
-        "entryPath": "/test-resources",
-        "version": "1.71.13"
-      },
-      "description": "SAPUI5 Resources"
-    },
-    {
-      "path": "/webapp/resources",
-      "target": {
-        "type": "service",
-        "name": "sapui5",
-        "entryPath": "/resources",
-        "version": "1.71.13"
-      },
-      "description": "SAPUI5 Resources"
-    },
-    {
-      "path": "/webapp/test-resources",
-      "target": {
-        "type": "service",
-        "name": "sapui5",
-        "entryPath": "/test-resources",
-        "version": "1.71.13"
-      },
-      "description": "SAPUI5 Test Resources"
-    },
-    {
-      "path": "/sap/opu/odata",
-      "target": {
-        "type": "destination",
-        "name": "ZHOFIO_CUSTOMER_SRV",
-        "entryPath": "/sap/opu/odata"
-      },
-      "description": "HOFIO Customer Service"
-    }
-  ],
-  "sendWelcomeFileRedirect": true
+	"welcomeFile": "/webapp/index.html",
+	"routes": [{
+		"path": "/resources",
+		"target": {
+			"type": "service",
+			"name": "sapui5",
+			"entryPath": "/resources",
+			"version": "1.71.13"
+		},
+		"description": "SAPUI5 Resources"
+	}, {
+		"path": "/test-resources",
+		"target": {
+			"type": "service",
+			"name": "sapui5",
+			"entryPath": "/test-resources",
+			"version": "1.71.13"
+		},
+		"description": "SAPUI5 Resources"
+	}, {
+		"path": "/webapp/resources",
+		"target": {
+			"type": "service",
+			"name": "sapui5",
+			"entryPath": "/resources",
+			"version": "1.71.13"
+		},
+		"description": "SAPUI5 Resources"
+	}, {
+		"path": "/webapp/test-resources",
+		"target": {
+			"type": "service",
+			"name": "sapui5",
+			"entryPath": "/test-resources",
+			"version": "1.71.13"
+		},
+		"description": "SAPUI5 Test Resources"
+	}, {
+		"path": "/sap/opu/odata",
+		"target": {
+			"type": "destination",
+			"name": "ZHOFIO_CUSTOMER_SRV",
+			"entryPath": "/sap/opu/odata"
+		},
+		"description": "HOFIO Customer Service"
+	}, {
+		"path": "/api",
+		"target": {
+			"type": "destination",
+			"name": "SampelRESTService"
+		},
+		"description": "Sample REST Service"
+	}],
+	"sendWelcomeFileRedirect": true
 }

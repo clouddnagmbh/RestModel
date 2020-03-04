@@ -2,8 +2,8 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"at/clouddna/axiostest/libs/RestModel",
-	"at/clouddna/axiostest/libs/TestClientModel"
-], function (Controller, RestModel, TestClientModel) {
+	"at/clouddna/axiostest/libs/CloudDNAModel"
+], function (Controller, RestModel, CloudDNAModel) {
 	"use strict";
 
 	return Controller.extend("at.clouddna.axiostest.controller.Main", {
@@ -12,16 +12,15 @@ sap.ui.define([
 
 		onInit: function () {
 			this._oModel = new RestModel({
-				url: "https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/sap/opu/odata/sap/ZHOFIO_CUSTOMER_SRV/",
+				url: "https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/api",
 				sendSkipTop: false,
+				xcsrfTokenHandling: false
 			});
 
-			this._oTestModel = new TestClientModel(
-				"https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/sap/opu/odata/sap/ZHOFIO_CUSTOMER_SRV/", {
-					initialLoadedEntities: ["CustomerSet"]
-				});
+			this._oTestModel = new CloudDNAModel(
+				"https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/api");
 
-			this.getView().setModel(this._oTestModel, "testClientModel");
+			this.getView().setModel(this._oTestModel, "cloudDNAModel");
 		},
 
 		onSubmitChangesPress: function () {

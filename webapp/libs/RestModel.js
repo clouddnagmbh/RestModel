@@ -2,9 +2,8 @@
 sap.ui.define([
 	"sap/ui/base/Object",
 	"at/clouddna/axiostest/libs/axios",
-	"at/clouddna/axiostest/libs/MetadataObjectFormatter",
 	"sap/base/Log"
-], function (Object, axiosjs, MetadataObjectFormatter, Log) {
+], function (Object, axiosjs, Log) {
 	"use strict";
 
 	/**
@@ -13,7 +12,6 @@ sap.ui.define([
 	 */
 	return Object.extend("at.clouddna.axiostest.libs.ODataRestModel", {
 		_axiosInstance: null,
-		_oMetadata: null,
 		_sXSRFToken: "",
 
 		_logger: null,
@@ -25,14 +23,14 @@ sap.ui.define([
 		 * @param {string} oConfig.url - URL of REST-Client.
 		 * @param {number} [oConfig.timeout=5000] - Reqest timeout.
 		 * @param {object} [oConfig.headers={}] - Request headers.
-		 * @param {boolean} [oConfig.xcsrfTokenHandling=true] - Request headers.
+		 * @param {boolean} [oConfig.xcsrfTokenHandling=false] - Request headers.
 		 */
 		constructor: function (oConfig) {
 			Object.call(this);
 
 			//if no configuration was provided, throw an exception
 			if (oConfig === undefined) {
-				throw new ReferenceError("ODataRestModel must be configured with a config-object");
+				throw new ReferenceError("RestModel must be configured with a config-object");
 			} else if (!oConfig.hasOwnProperty("url")) {
 				//if no url to a service was provided, throw an exception
 				throw new ReferenceError("The property 'url' in the function-parameter must be specified");
@@ -49,11 +47,8 @@ sap.ui.define([
 
 			this._logger.info("Instance created");
 
-			//fetch the $metadata-object if available
-			this._loadMetadata();
-
 			//fetch x-csrf-token if available
-			this.setXCSRFTokenHandling(oConfig.hasOwnProperty("xcsrfTokenHandling") ? oConfig.xcsrfTokenHandling : true);
+			this.setXCSRFTokenHandling(oConfig.hasOwnProperty("xcsrfTokenHandling") ? oConfig.xcsrfTokenHandling : false);
 		},
 
 		/**
@@ -100,15 +95,14 @@ sap.ui.define([
 		 * @param {object} [oParameters] - Parameter object for read-requests.
 		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
 		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
+		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
+		 * @param {object} [oParameters.restUrlParameters] - Additional URL-parameters for REST-calls.
 		 * @param {Array} [oParamerers.select] - String-array for $select-parameter.
 		 * @param {string} [oParamerers.filter] - String for $filter-parameter.
-		 * @param {Array} [oParamerers.expand] - String-array for expand-parameter.
 		 * @param {number} [oParamerers.skip=0] - Integer for $skip-parameter. Default is 0.
 		 * @param {number} [oParamerers.top=100] - Integer for $top-parameter. Default is 100.
 		 * @param {Array} [oParamerers.orderyb] - String-array for $orderby-parameter.
-		 * @param {boolean} [oParameters.sendSkipTop=true] - Send default $top=100 and $skip=0.
-		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
-		 * @param {object} [oParameters.restUrlParameters] - Additional URL-parameters for REST-calls.
+		 * @param {boolean} [oParameters.sendSkipTop=false] - Send default $top=100 and $skip=0.
 		 * @returns {promise} [oPromise] - returns promise if no success- or error-callback was specified.
 		 */
 		read: function (sPath, oParameters) {
@@ -126,18 +120,16 @@ sap.ui.define([
 
 				bReturnPromise = !(oParameters.hasOwnProperty("success") || oParameters.hasOwnProperty("error"));
 
-				//OData specific
+				//URL parameters specific
 				let sSelect = oParameters.hasOwnProperty("select") ? oParameters.select.join(",") : "",
 					sFilter = oParameters.hasOwnProperty("filter") ? oParameters.filter : "",
-					sExpand = oParameters.hasOwnProperty("expand") ? oParameters.expand.join(",") : "",
 					iSkip = oParameters.hasOwnProperty("skip") ? oParameters.skip : 0,
 					iTop = oParameters.hasOwnProperty("top") ? oParameters.top : 100,
 					sOrderby = oParameters.hasOwnProperty("orderby") ? oParameters.orderby.join(",") : "",
-					bSendSkipTop = oParameters.hasOwnProperty("sendSkipTop") ? oParameters.sendSkipTop : true,
+					bSendSkipTop = oParameters.hasOwnProperty("sendSkipTop") ? oParameters.sendSkipTop : false,
 					aParams = [];
 
 				aParams.push(sSelect === "" ? sSelect : "$select=" + sSelect);
-				aParams.push(sExpand === "" ? sExpand : "$expand=" + sExpand);
 				aParams.push(sFilter === "" ? sFilter : "$filter=" + sFilter);
 				aParams.push(bSendSkipTop ? "$skip=" + iSkip : "");
 				aParams.push(bSendSkipTop ? "$top=" + iTop : "");
@@ -172,12 +164,12 @@ sap.ui.define([
 
 			//if no callback function was provided, return a promise
 			if (bReturnPromise) {
-				this._logger.info("GET - sent (promise)");
+				this._logger.info("GET - sent on '" + sPath + "'(promise)");
 				return this._axiosInstance.get(sPath, oHeaders);
 			}
 
 			//read with callback functions
-			this._logger.info("GET - sent (callback)");
+			this._logger.info("GET - sent on '" + sPath + "'(callback)");
 			this._axiosInstance.get(sPath, oHeaders).then(fnSuccess, fnError);
 		},
 
@@ -209,12 +201,12 @@ sap.ui.define([
 
 			//if no callback function was provided, return a promise
 			if (bReturnPromise) {
-				this._logger.info("PUT - sent (promise)");
+				this._logger.info("PUT - sent on '" + sPath + "'(promise)");
 				return this._axiosInstance.put(sPath, oObject || {}, oHeaders);
 			}
 
 			//update with callback functions
-			this._logger.info("PUT - sent (callback)");
+			this._logger.info("PUT - sent on '" + sPath + "'(callback)");
 			this._axiosInstance.put(sPath, oObject || {}, oHeaders).then(fnSuccess, fnError);
 		},
 
@@ -249,37 +241,14 @@ sap.ui.define([
 
 			//if no callback function was provided, return a promise
 			if (bReturnPromise) {
-				this._logger.info("DELETE - sent (promise)");
+				this._logger.info("DELETE - sent on '" + sPath + "'(promise)");
 				return this._axiosInstance.delete(sPath, oHeaders);
 			}
 
 			//remove with callback functions
-			this._logger.info("DELETE - sent (callback)");
+			this._logger.info("DELETE - sent on '" + sPath + "'(callback)");
 			this._axiosInstance.delete(sPath, oHeaders).then(fnSuccess, fnError);
 
-		},
-
-		/**
-		 * @function _loadMetadata 
-		 * @private
-		 */
-		_loadMetadata: function () {
-			this._axiosInstance.get("/$metadata").then(function (oData) {
-					this.setMetadata(oData.data);
-					this._logger.info("METADATA - loaded");
-				}.bind(this),
-				function (oError) {
-					this._logger.info("METADATA - no metadata-file available");
-				}
-			);
-		},
-
-		getMetadata: function () {
-			return this._oMetadata;
-		},
-
-		setMetadata: function (oMetadata) {
-			this._oMetadata = oMetadata;
 		},
 
 		/**
@@ -300,10 +269,10 @@ sap.ui.define([
 					}.bind(this),
 					function (oError) {
 						this._logger.error("No X-CSRF-Token available: " + oError);
-					});
+					}.bind(this));
 			} else {
 				delete this._axiosInstance.defaults.headers['x-csrf-token'];
-				this._logger.warning("X-CSRF-Tokenh deleted");
+				this._logger.warning("X-CSRF-Tokenhanling disabled");
 			}
 		},
 

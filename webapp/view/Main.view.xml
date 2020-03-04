@@ -2,7 +2,7 @@
 	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:codeeditor="sap.ui.codeeditor">
 	<Page title="axios Test">
 		<content>
-			<Text text="https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/sap/opu/odata/sap/ZHOFIO_CUSTOMER_SRV/"/>
+			<Text text="https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/api"/>
 			<VBox alignItems="Center">
 				<Button text="send GET" press="onGetPress"/>
 				<Button text="send POST" press="onPostPress"/>
@@ -20,12 +20,14 @@
 			<Label text="Response"/>
 			<codeeditor:CodeEditor id="codeeditor_response" type="json" width="100%" height="50%"/>
 			<Button text="submit changes" press="onSubmitChangesPress"/>
-			<Input id="input" value="{path: 'testClientModel>/CustomerSet/3/Firstname'}"/>
-			<List items="{path: 'testClientModel>/CustomerSet', parameters: {sendGet: true}}">
+			<Input value="{cloudDNAModel>/todos/1/title}"/>
+			<List items="{path: 'cloudDNAModel>/todos', parameters: {sendGet: true}}" growing="true" growingThreshold="50">
 				<items>
 					<CustomListItem>
-						<Input value="{testClientModel>Firstname}"/>
-						<Input value="{testClientModel>Lastname}"/>
+						<HBox>
+							<Input value="{cloudDNAModel>id}"/>
+							<Input value="{cloudDNAModel>title}"/>
+						</HBox>
 					</CustomListItem>
 				</items>
 			</List>

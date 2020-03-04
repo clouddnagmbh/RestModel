@@ -9,8 +9,11 @@ sap.ui.define([
 
 	return JSONModel.extend("at.clouddna.axiostest.libs.CloudDNAModel", {
 		_restModel: null,
-		_aChanges: [],
+		_aChanges: null,
 		_oCopy: null,
+
+		//Key-Properties per entity-set
+		_oKeysForEntitySet: {},
 
 		//Logger
 		_logger: null,
@@ -21,6 +24,7 @@ sap.ui.define([
 		 * @param {string} sPath - Path to REST-Client.
 		 * @param {object} oParameters - Parameters for CloudDNAModel.
 		 * @param {Array} [oParameters.initialLoadedEntities] - URIs to Entities that should be initially loaded - e.g.: ["Customers", "Tasks"].
+		 * @param {Object} [oParameters.keysForEntitySet] - Key-Properties for an Entity-Set, needs to be provided for an entity-set where submitLocalChanges should work.
 		 * @param {object} oConfig - Parameters for RestModel-Model.
 		 * @param {number} [oConfig.timeout=5000] - Reqest timeout.
 		 * @param {object} [oConfig.headers={}] - Request headers.
@@ -65,6 +69,7 @@ sap.ui.define([
 						this._logger.info("Initial Data set.");
 					}.bind(this));
 				}
+				this._oKeysForEntitySet = oParameters.hasOwnProperty("keysForEntitySet") ? oParameters.keysForEntitySet : this._oKeysForEntitySet;
 			}
 
 			//save local changes on property-change-event
@@ -85,6 +90,7 @@ sap.ui.define([
 			//make copy of local data on first property-change
 			if (this._oCopy === null) {
 				this._oCopy = JSON.parse(JSON.stringify(this.getData()));
+				this._aChanges = [];
 			}
 
 			//Aggregation-Binding
@@ -135,37 +141,53 @@ sap.ui.define([
 				fnError = oParameters.hasOwnProperty("error") ? oParameters.error : fnError;
 			}
 
-			//Map the different changes to their Entity
-			let aSortedChanges = this._mapChanges(),
-				aPromises = [];
+			if (this.hasLocalChanges()) {
+				//Map the different changes to their Entity
+				let aSortedChanges = this._mapChanges(),
+					aPromises = [];
 
-			aSortedChanges.forEach(function (oChange) {
-				let oEntity = this.getProperty(oChange.entity),
-					sUrl = oChange.entity;
+				aSortedChanges.forEach(function (oChange) {
+					let oEntity = this.getProperty(oChange.entity),
+						sUrl = oChange.entity,
+						sEntitySet = sUrl.substring(1).slice(0, sUrl.substring(1).lastIndexOf("/"));
 
-				if (sendOnlyChanged) {
-					aPromises.push(this.restModel.update(sUrl, oChange.properties));
-				} else {
-					aPromises.push(this._restModel.update(sUrl, oEntity));
-				}
-			}.bind(this));
+					if (this._oKeysForEntitySet[sEntitySet]) {
 
-			//Submit all Changes via Promise.all
-			this._logger.info("Submitting local changes.");
-			Promise.all(aPromises).then(function (aResults) {
-					//reset the Change-Objects
-					this._oCopy = null;
-					this._aChanges = null;
+						sUrl = "/" + sEntitySet + "/" + oEntity[this._oKeysForEntitySet[sEntitySet]];
 
-					this._logger.info("Changes submitted.");
-
-					fnSuccess();
-				}.bind(this),
-				function (oError) {
-					this._logger.error(JSON.stringify(oError));
-
-					fnError();
+						if (sendOnlyChanged) {
+							aPromises.push(this.restModel.update(sUrl, oChange.properties));
+						} else {
+							aPromises.push(this._restModel.update(sUrl, oEntity));
+						}
+					} else {
+						this._logger.error("No Key-Propety for Entity-Set '" + sEntitySet + "' provided, changes won't be submitted");
+					}
 				}.bind(this));
+
+				if (aPromises.length < 0) {
+					//Submit all Changes via Promise.all
+					this._logger.info("Submitting local changes.");
+					Promise.all(aPromises).then(function (aResults) {
+							//reset the Change-Objects
+							this._oCopy = null;
+							this._aChanges = null;
+
+							this._logger.info("Changes submitted.");
+
+							fnSuccess();
+						}.bind(this),
+						function (oError) {
+							this._logger.error(JSON.stringify(oError));
+
+							fnError();
+						}.bind(this));
+				} else {
+					this._logger.error("Changes were found, but no Key-Properties were given for all changed Entitiy-Sets.");
+				}
+			} else {
+				this._logger.info("No changes were found!");
+			}
 		},
 
 		/**
@@ -235,6 +257,31 @@ sap.ui.define([
 			this.refresh();
 		},
 
+		/**
+		 * @function addKeyForEntity
+		 * @public
+		 */
+		addKeyForEntitySet: function (sEntity, sProperty) {
+			if (sEntity === undefined || sEntity === "" || sProperty === undefined || sProperty === "") {
+				throw new ReferenceError("Entity and Property must be specified");
+			}
+
+			this._oKeysForEntitySet[sEntity] = sProperty;
+		},
+
+		/**
+		 * @function removeKeyForEntity
+		 * @public 
+		 * @returns {boolean}
+		 */
+		removeKeyForEntitySet: function (sEntity) {
+			if (sEntity === undefined || sEntity === "") {
+				throw new ReferenceError("Entity must be specified");
+			}
+
+			return delete this._oKeysForEntitySet[sEntity];
+		},
+
 		/*bindProperty: function (sPath, oContext, aSorters, aFilters, mParameters) {
 				let oPropertyBinding = new sap.ui.model.json.JSONPropertyBinding(this, sPath, oContext, aSorters, aFilters, mParameters);
 				var oParameters = aSorters;
@@ -256,26 +303,69 @@ sap.ui.define([
 		/**
 		 * @function refreshEntitySet
 		 * @public
-		 * @param {string} sPath - Loads or refreshes a given Entity 
+		 * @param {string} sPath - Loads or refreshes a given entity-set
+		 * @param {object} oParameters - Parameters for refreshing an entity.
+		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
+		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
 		 */
-		refreshEntitySet: function (sPath) {
-			if (!sPath || sPath === "") {
-				throw new ReferenceError("Path to ressource must be specified");
-			}
+		refreshEntitySet: function (sPath, oParameters) {
+			this._restModel.checkPath(sPath);
 
 			this._restModel.read(sPath, {
 				success: function (oData) {
 					this.getData()[sPath.substring(1)] = oData.data;
 					this.refresh();
+
+					if (oParameters) {
+						if (oParameters.hasOwnProperty("success")) {
+							oParameters.success();
+						}
+					}
 				}.bind(this),
 				error: function (oError) {
-
-				}
+					if (oParameters) {
+						if (oParameters.hasOwnProperty("error")) {
+							oParameters.error();
+						}
+					}
+				}.bind(this)
 			});
 		},
 
 		/**
-		 * @function refreshEntitySet
+		 * @function refreshEntity
+		 * @public
+		 * @param {string} sPath - Loads or refreshes a given Entity 
+		 * @param {object} oParameters - Parameters for refreshing an entity.
+		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
+		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
+		 */
+		refreshEntity: function (sPath, oParameters) {
+			this._restModel.checkPath(sPath);
+
+			let sLPath = sPath;
+
+			this._restModel.read(sPath, {
+				success: function (oData) {
+
+					if (oParameters) {
+						if (oParameters.hasOwnProperty("success")) {
+							oParameters.success();
+						}
+					}
+				}.bind(this),
+				error: function (oError) {
+					if (oParameters) {
+						if (oParameters.hasOwnProperty("error")) {
+							oParameters.error();
+						}
+					}
+				}.bind(this)
+			});
+		},
+
+		/**
+		 * @function bindList
 		 * @public
 		 * @override
 		 * @param {string} sPath - URI to the binding Entity 
@@ -299,7 +389,68 @@ sap.ui.define([
 			}
 
 			return new sap.ui.model.json.JSONListBinding(this, sPath, oContext, aSorters, aFilters, mParameters);
-		}
+		},
 
+		/**
+		 * @function create - Calls RestModel.create
+		 * @public
+		 * @param {string} sPath - Path where a new ressource should be added.
+		 * @param {object} sObject - Data which should be posted. 
+		 * @param {object} [oParameters] - Parameter object for read-requests.
+		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
+		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
+		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
+		 */
+		create: function (sPath, sObject, oParameters) {
+			return this._restModel.create(sPath, sObject, oParameters);
+		},
+
+		/**
+		 * @function read - Calls RestModel.read(...)
+		 * @public
+		 * @param {string} sPath - Path to a ressource, absolute to the set base-url.
+		 * @param {object} [oParameters] - Parameter object for read-requests.
+		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
+		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
+		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
+		 * @param {object} [oParameters.restUrlParameters] - Additional URL-parameters for REST-calls.
+		 * @param {Array} [oParamerers.select] - String-array for $select-parameter.
+		 * @param {string} [oParamerers.filter] - String for $filter-parameter.
+		 * @param {number} [oParamerers.skip=0] - Integer for $skip-parameter. Default is 0.
+		 * @param {number} [oParamerers.top=100] - Integer for $top-parameter. Default is 100.
+		 * @param {Array} [oParamerers.orderyb] - String-array for $orderby-parameter.
+		 * @param {boolean} [oParameters.sendSkipTop=false] - Send default $top=100 and $skip=0.
+		 * @returns {promise} [oPromise] - returns promise if no success- or error-callback was specified.
+		 */
+		read: function (sPath, oParameters) {
+			return this._restModel.read(sPath, oParameters);
+		},
+
+		/**
+		 * @function update - Calls RestModel.update(...)
+		 * @public
+		 * @param {string} sPath - Path where a new ressource should be added.
+		 * @param {object} sObject - Data which should be posted. 
+		 * @param {object} [oParameters] - Parameter object for read-requests.
+		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
+		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
+		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
+		 */
+		update: function (sPath, oObject, oParameters) {
+			return this._restModel.update(sPath, oObject, oParameters);
+		},
+
+		/**
+		 * @function remove - Calls RestModel.remove(...)
+		 * @public
+		 * @param {string} sPath - Path where a new ressource should be added.
+		 * @param {object} [oParameters] - Parameter object for read-requests.
+		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
+		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
+		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
+		 */
+		remove: function (sPath, oParameters) {
+			return this._restModel(sPath, oParameters);
+		}
 	});
 });

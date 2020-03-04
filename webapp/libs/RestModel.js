@@ -106,7 +106,7 @@ sap.ui.define([
 		 * @returns {promise} [oPromise] - returns promise if no success- or error-callback was specified.
 		 */
 		read: function (sPath, oParameters) {
-			sPath = this._checkSPath(sPath);
+			sPath = this.checkPath(sPath);
 
 			let fnSuccess = function (oResponse) {},
 				fnError = function (oError) {},
@@ -220,7 +220,7 @@ sap.ui.define([
 		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
 		 */
 		remove: function (sPath, oParameters) {
-			sPath = this._checkSPath(sPath);
+			sPath = this.checkPath(sPath);
 
 			let fnSuccess = function (oResponse) {},
 				fnError = function (oError) {},
@@ -277,12 +277,12 @@ sap.ui.define([
 		},
 
 		/**
-		 * @function _checkSPath
+		 * @function checkPath
 		 * @private
 		 * @param {string} sPath - Absolute path to ressource.
 		 * @returns {string} sPath - Returns the path if no error was thrown.
 		 */
-		_checkSPath: function (sPath) {
+		checkPath: function (sPath) {
 			//Path to ressource needs to be specified
 			if (!sPath || sPath === "") {
 				throw new ReferenceError("Path to ressource must be specified");

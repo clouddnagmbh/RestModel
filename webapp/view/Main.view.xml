@@ -20,8 +20,10 @@
 			<Label text="Response"/>
 			<codeeditor:CodeEditor id="codeeditor_response" type="json" width="100%" height="50%"/>
 			<Button text="submit changes" press="onSubmitChangesPress"/>
+			<Button text="refresh entity-set 'todos'" press="onRefreshEntitySetPress"/>
+			<Button text="refresh entity 'todos/2'" press="onRefreshEntityPress"/>
 			<Input value="{cloudDNAModel>/todos/1/title}"/>
-			<List items="{path: 'cloudDNAModel>/todos', parameters: {sendGet: true}}" growing="true" growingThreshold="50">
+			<List items="{path: 'cloudDNAModel>/todos', parameters: {sendGet: true, keyField: 'id'}}" growing="true" growingThreshold="50">
 				<items>
 					<CustomListItem>
 						<HBox>

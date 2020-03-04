@@ -18,13 +18,25 @@ sap.ui.define([
 			});
 
 			this._oTestModel = new CloudDNAModel(
-				"https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/api");
+				"https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/api", {
+					keysForEntitySet: {
+						"todos": "id"
+					}
+				});
 
 			this.getView().setModel(this._oTestModel, "cloudDNAModel");
 		},
 
 		onSubmitChangesPress: function () {
 			this._oTestModel.submitLocalChanges();
+		},
+
+		onRefreshEntitySetPress: function () {
+			this._oTestModel.refreshEntitySet("/todos");
+		},
+
+		onRefreshEntityPress: function () {
+			this._oTestModel.refreshEntity("/todos/4");
 		},
 
 		onGetPress: function (oEvent) {

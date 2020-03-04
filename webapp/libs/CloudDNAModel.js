@@ -1,10 +1,8 @@
 sap.ui.define([
 	"sap/ui/model/json/JSONModel",
-	"at/clouddna/axiostest/libs/axios",
-	"at/clouddna/axiostest/libs/MetadataObjectFormatter",
 	"at/clouddna/axiostest/libs/RestModel",
 	"sap/base/Log"
-], function (JSONModel, axiosjs, MetadataObjectFormatter, RestModel, Log) {
+], function (JSONModel, RestModel, Log) {
 	"use strict";
 
 	return JSONModel.extend("at.clouddna.axiostest.libs.CloudDNAModel", {

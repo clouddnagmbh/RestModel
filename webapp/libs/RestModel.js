@@ -55,13 +55,13 @@ sap.ui.define([
 		 * @function create
 		 * @public
 		 * @param {string} sPath - Path where a new ressource should be added.
-		 * @param {object} sObject - Data which should be posted. 
+		 * @param {object} oObject - Data which should be posted. 
 		 * @param {object} [oParameters] - Parameter object for read-requests.
 		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
 		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
 		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
 		 */
-		create: function (sPath, sObject, oParameters) {
+		create: function (sPath, oObject, oParameters) {
 			let fnSuccess = function (oResponse) {},
 				fnError = function (oError) {},
 				bReturnPromise = true,
@@ -80,12 +80,12 @@ sap.ui.define([
 			//if no callback function was provided, return a promise
 			if (bReturnPromise) {
 				this._logger.info("POST - sent (promise)");
-				return this._axiosInstance.post(sPath, sObject || {}, oHeaders);
+				return this._axiosInstance.post(sPath, oObject || {}, oHeaders);
 			}
 
 			//create with callback functions
 			this._logger.info("POST - sent (callback)");
-			this._axiosInstance.post(sPath, sObject || {}, oHeaders).then(fnSuccess, fnError);
+			this._axiosInstance.post(sPath, oObject || {}, oHeaders).then(fnSuccess, fnError);
 		},
 
 		/**

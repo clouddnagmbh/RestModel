@@ -272,7 +272,7 @@ sap.ui.define([
 					}.bind(this));
 			} else {
 				delete this._axiosInstance.defaults.headers['x-csrf-token'];
-				this._logger.warning("X-CSRF-Tokenhanling disabled");
+				this._logger.warning("X-CSRF-Tokenhandling disabled");
 			}
 		},
 

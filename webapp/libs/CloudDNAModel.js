@@ -321,16 +321,18 @@ sap.ui.define([
 					this.getData()[sPath.substring(1)] = oData.data;
 					this.refresh();
 
+					this._logger.info("Entity refreshed");
 					if (oParameters) {
 						if (oParameters.hasOwnProperty("success")) {
-							oParameters.success();
+							oParameters.success(oData);
 						}
 					}
 				}.bind(this),
 				error: function (oError) {
+					this._logger.error(oError);
 					if (oParameters) {
 						if (oParameters.hasOwnProperty("error")) {
-							oParameters.error();
+							oParameters.error(oError);
 						}
 					}
 				}.bind(this)
@@ -348,21 +350,46 @@ sap.ui.define([
 		refreshEntity: function (sPath, oParameters) {
 			this._restModel.checkPath(sPath);
 
-			let sLPath = sPath;
-
 			this._restModel.read(sPath, {
 				success: function (oData) {
+					let sEntitySet = oData.config.url;
 
-					if (oParameters) {
-						if (oParameters.hasOwnProperty("success")) {
-							oParameters.success();
+					sEntitySet = sEntitySet.substring(1).slice(0, sEntitySet.substring(1).lastIndexOf("/"));
+
+					if (this._oKeysForEntitySet[sEntitySet]) {
+						let oEntity = this.getData()[sEntitySet].find(e => e[this._oKeysForEntitySet[sEntitySet]] === oData.data[this._oKeysForEntitySet[
+							sEntitySet]]);
+
+						if (oEntity) {
+							let iIdx = this.getData()[sEntitySet].indexOf(oEntity);
+
+							this.getData()[sEntitySet][iIdx] = oData.data;
+						} else {
+							this.getData()[sEntitySet].unshift(oData.data);
+						}
+
+						this._logger.info("Entity refreshed");
+
+						if (oParameters) {
+							if (oParameters.hasOwnProperty("success")) {
+								oParameters.success(oData);
+							}
+						}
+					} else {
+						this._logger.error("No Key-Property for Entity-Set provided!");
+
+						if (oParameters) {
+							if (oParameters.hasOwnProperty("error")) {
+								oParameters.error("No Key-Property for Entity-Set provided!");
+							}
 						}
 					}
 				}.bind(this),
 				error: function (oError) {
+					this._logger.error(oError);
 					if (oParameters) {
 						if (oParameters.hasOwnProperty("error")) {
-							oParameters.error();
+							oParameters.error(oError);
 						}
 					}
 				}.bind(this)

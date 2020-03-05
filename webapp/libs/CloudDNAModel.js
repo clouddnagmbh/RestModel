@@ -120,6 +120,13 @@ sap.ui.define([
 			this._logger.info("Property '" + oChange.entity + "/" + oChange.property + "' changed.");
 		},
 
+		setBearerToken: function (sToken) {
+			this._restModel.addHeader({
+				name: "Authorization",
+				value: "Bearer " + sToken
+			});
+		},
+
 		/**
 		 * @function submitLocalChanges
 		 * @public

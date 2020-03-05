@@ -277,6 +277,27 @@ sap.ui.define([
 		},
 
 		/**
+		 * @function addHeader
+		 * @private
+		 * @param {object} oHeader - New Header-Object.
+		 * @param {string} oHeader.name - Header-Name.
+		 * @param {value} oHeader.value - Header-Value.
+		 */
+		addHeader: function (oHeader) {
+			this._axiosInstance.defaults.headers.common[oHeader.name] = oHeader.value;
+		},
+
+		/**
+		 * @function removeHeader
+		 * @private
+		 * @param {string} sHeaderName - Header-Name.
+		 * @returns {boolean} - Entry deleted or not.
+		 */
+		removeHeader: function (sHeaderName) {
+			return delete this._axiosInstance.defaults.headers.common[sHeaderName];
+		},
+
+		/**
 		 * @function checkPath
 		 * @private
 		 * @param {string} sPath - Absolute path to ressource.

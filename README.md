@@ -187,12 +187,12 @@ Ein Beispiel hierfür wäre:
 ## addHeader
 Fügt einen neuen Default-Request-Header hinzu.
 
-    oModel.addHeader(oHeader)
+    oModel.addHeader(sHeaderName, sHeaderValue)
     
     //parameters
     oHeader = {
-		 {string} name - Header-Name.
-		 {value} value - Header-Value.
+		 {string} sHeaderName - Header-Name.
+		 {string} sHeaderValue - Header-Value.
 	}
 
 ## removeHeader

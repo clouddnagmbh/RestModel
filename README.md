@@ -176,6 +176,20 @@ Ein Beispiel hierfür wäre:
   				}
   	});
 
+## bearerTokenLogin
+Mit dieser Funktion lässt sich einfach das Bearer-Token setzen. Es müssen nur Username, Passwort und eine URL, wo der Token herkommt, mitgegeben werden. Die Funktion setzt dann den **Authorization**-Token, der für die weiteren Requests verwendet wird.
+
+    oModel.bearerTokenLogin: function (sUrl, sUsername, sPassword, oParameters) 
+    
+    //parameters
+    sUrl = {string} - Url for login.
+    sUsername = {string} - Username.
+    sPassword = {string} - Password.
+    oParameters = {
+	    success = {function}  - Success-callback function.
+	    error = {function}  - Error-callback function.
+    }
+
 ## setXCSRFTokenHandling
 Über diese Funktion lässt sich das **X-CSRF-Tokenhandling** ein- oder ausschalten. Hierbei wird zuerst ein GET-Request mit einem Header namens **"X-CSRF-Token": "fetch"** geschickt. Das Restultat dieses Request beinhaltet das entsprechende X-CSRF-Token, das nun als Request-Header für alle CRUD-Requests eingesetzt wird.
 

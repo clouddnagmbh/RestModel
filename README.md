@@ -49,6 +49,23 @@ Ein Beispiel hierfür wäre:
 
 
 
+## Zugriff per Destination
+Um den Auslieferungszugriff zu erleichtern und nicht auf die webidetesting-Url angewiesen zu sein, kann in der neo-app.json ein **Mapping** zwischen einem **Pfad** und einer in der Cloud Platform existierender **Destination** hergestellt werden.
+Dazu einen neuen Eintrag in dem **routes**-Array erstellen.
+
+
+     {
+    	"path": "/api",
+    	"target": {
+    		"type": "destination",
+    		"name": "MyDestination"
+    	},
+    	"description": "My Destination"
+    }
+
+Anschließend kann das RestModel mit der URL **"/api**" erstellt werden und man ist nicht mehr von der webidetesting-Url abhängig.
+
+
 ## create
 Die **create**-Methode des RESTModes benutzt die HTTP **POST**-Funktion, um neue Daten per REST-Call zu speichern.
 

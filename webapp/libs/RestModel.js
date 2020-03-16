@@ -9,6 +9,7 @@ sap.ui.define([
 	/**
 	 * @class 
 	 * @author Maximilian  Olzinger [maximilian.olzinger@clouddna.at]
+	 * @version 1.0
 	 */
 	return Object.extend("at.clouddna.axiostest.libs.ODataRestModel", {
 		_axiosInstance: null,
@@ -56,7 +57,7 @@ sap.ui.define([
 		 * @public
 		 * @param {string} sPath - Path where a new ressource should be added.
 		 * @param {object} oObject - Data which should be posted. 
-		 * @param {object} [oParameters] - Parameter object for read-requests.
+		 * @param {object} [oParameters] - Parameter object for create-requests.
 		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
 		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
 		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
@@ -178,7 +179,7 @@ sap.ui.define([
 		 * @public
 		 * @param {string} sPath - Path where a new ressource should be added.
 		 * @param {object} sObject - Data which should be posted. 
-		 * @param {object} [oParameters] - Parameter object for read-requests.
+		 * @param {object} [oParameters] - Parameter object for update-requests.
 		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
 		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
 		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
@@ -214,7 +215,7 @@ sap.ui.define([
 		 * @function remove
 		 * @public
 		 * @param {string} sPath - Path where a new ressource should be added.
-		 * @param {object} [oParameters] - Parameter object for read-requests.
+		 * @param {object} [oParameters] - Parameter object for remove-requests.
 		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
 		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
 		 * @param {object} [oParameters.headers] - Send additional axios-header-parameters.
@@ -279,12 +280,12 @@ sap.ui.define([
 		/**
 		 * @function addHeader
 		 * @private
-		 * @param {object} oHeader - New Header-Object.
-		 * @param {string} oHeader.name - Header-Name.
-		 * @param {value} oHeader.value - Header-Value.
+		 * @param {string} sHeaderName - Header-Name.
+		 * @param {string} sHeaderValue - Header-Value.
 		 */
-		addHeader: function (oHeader) {
-			this._axiosInstance.defaults.headers.common[oHeader.name] = oHeader.value;
+		addHeader: function (sHeaderName, sHeaderValue) {
+			this._axiosInstance.defaults.headers.common[sHeaderName] = sHeaderValue;
+			this._logger.info("Header '" + sHeaderName + " was set.");
 		},
 
 		/**
@@ -294,12 +295,49 @@ sap.ui.define([
 		 * @returns {boolean} - Entry deleted or not.
 		 */
 		removeHeader: function (sHeaderName) {
+			this._logger.info("Header '" + sHeaderName + " was removed.");
 			return delete this._axiosInstance.defaults.headers.common[sHeaderName];
 		},
 
 		/**
+		 * @function bearerTokenLogin
+		 * @public
+		 * @param {string} sUrl - Url for login.
+		 * @returns {string} sUsername - Username.
+		 * @returns {string} sPassword - Password.
+		 * @param {object} [oParameters] - Parameter object for login-requests.
+		 * @param {function} [oParamerers.success=function(){}] - Success-callback function.
+		 * @param {function} [oParamerers.error=function(){}] - Error-callback function.
+		 */
+		bearerTokenLogin: function (sUrl, sUsername, sPassword, oParameters) {
+			if (sUsername && sPassword && sUrl) {
+				let fnSuccess = function () {},
+					fnError = function () {};
+
+				if (oParameters) {
+					fnSuccess = oParameters.hasOwnProperty("success") ? oParameters.success : fnSuccess;
+					fnError = oParameters.hasOwnProperty("error") ? oParameters.error : fnError;
+				}
+
+				this.create(sUrl, {
+					"username": sUsername,
+					"password": sPassword
+				}, {
+					success: function (oData) {
+						this.addHeader("Authorization", "Bearer " + oData.data.token);
+						this._logger.info("Login sucessfull.");
+						fnSuccess(oData);
+					}.bind(this),
+					error: fnError
+				});
+			} else {
+				throw new ReferenceError("Username and Password must be given.");
+			}
+		},
+
+		/**
 		 * @function checkPath
-		 * @private
+		 * @public
 		 * @param {string} sPath - Absolute path to ressource.
 		 * @returns {string} sPath - Returns the path if no error was thrown.
 		 */

@@ -78,11 +78,9 @@
 			}
 		},
 		"resources": {
-			"css": [
-				{
-					"uri": "css/style.css"
-				}
-			]
+			"css": [{
+				"uri": "css/style.css"
+			}]
 		},
 		"routing": {
 			"config": {
@@ -94,24 +92,23 @@
 				"controlId": "app",
 				"clearControlAggregation": false
 			},
-			"routes": [
-				{
-					"name": "RouteApp",
-					"pattern": "RouteApp",
-					"target": [
-						"TargetApp"
-					]
-				},
-				{
-					"name": "Main",
-					"pattern": "",
-					"titleTarget": "",
-					"greedy": false,
-					"target": [
-						"Main"
-					]
-				}
-			],
+			"routes": [{
+				"name": "RouteApp",
+				"pattern": "RouteApp",
+				"target": ["TargetApp"]
+			}, {
+				"name": "Main",
+				"pattern": "",
+				"titleTarget": "",
+				"greedy": false,
+				"target": ["Master"]
+			}, {
+				"name": "Detail",
+				"pattern": "detail/{id}",
+				"titleTarget": "",
+				"greedy": false,
+				"target": ["Detail"]
+			}],
 			"targets": {
 				"TargetApp": {
 					"viewType": "XML",
@@ -123,6 +120,16 @@
 				"Main": {
 					"viewType": "XML",
 					"viewName": "Main",
+					"controlAggregation": "pages"
+				},
+				"Master": {
+					"viewType": "XML",
+					"viewName": "Master",
+					"controlAggregation": "pages"
+				},
+				"Detail": {
+					"viewType": "XML",
+					"viewName": "Detail",
 					"controlAggregation": "pages"
 				}
 			}

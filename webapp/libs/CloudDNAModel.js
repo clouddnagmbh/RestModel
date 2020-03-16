@@ -316,9 +316,12 @@ sap.ui.define([
 		refreshEntitySet: function (sPath, oParameters) {
 			this._restModel.checkPath(sPath);
 
+			//this._buildObjectFromPath("/blogs/comment/5/2/test", ["test1", "test2"]);
+
 			this._restModel.read(sPath, {
 				success: function (oData) {
-					this.getData()[sPath.substring(1)] = oData.data;
+					this._buildObjectFromPath(sPath, oData.data);
+
 					this.refresh();
 
 					this._logger.info("Entity refreshed");
@@ -339,6 +342,73 @@ sap.ui.define([
 			});
 		},
 
+		_buildObjectFromPath: function (sPath, oData) {
+			let aPath = sPath.split("/"),
+				sConcatPath = "";
+
+			if (aPath[0] === "") {
+				aPath.shift();
+			}
+
+			if (this.getProperty(sPath)) {
+				this.setProperty(sPath, oData);
+				return;
+			}
+
+			if (aPath.length === 1) {
+				this.setProperty(sPath, oData);
+				return;
+			}
+			for (let h = 0; h < aPath.length; h++) {
+				sConcatPath += "/" + aPath[h];
+
+				if (h === aPath.length - 1) {
+					if (Array.isArray(oData)) {
+						let sEntitySet = aPath.pop();
+
+						if (this._oKeysForEntitySet[sEntitySet]) {
+							let aArray = [];
+
+							oData.forEach(function (oElement) {
+								aArray[oElement[this._oKeysForEntitySet[sEntitySet]]] = oElement;
+							}.bind(this));
+							oData = aArray;
+						} else {
+							throw new ReferenceError("No Key-Property for Entity-Set '" + sEntitySet + "'provided!");
+						}
+					}
+					this.setProperty(sConcatPath, oData);
+				} else {
+					if (parseInt(aPath[h])) {
+						let sHPath = sConcatPath.slice(0, sConcatPath.lastIndexOf("/"));
+						let aArray = [];
+						aArray[parseInt(aPath[h])] = null;
+
+						if (parseInt(aPath[h + 1])) {
+							aArray[parseInt(aPath[h])] = [];
+						} else {
+							let oObject = {};
+							oObject[aPath[h + 1]] = undefined;
+							aArray[parseInt(aPath[h])] = oObject;
+						}
+
+						this.setProperty(sHPath, aArray);
+					} else {
+						this.setProperty(sConcatPath);
+
+						if (parseInt(aPath[h + 1])) {
+							let aArray = [];
+							this.setProperty(sConcatPath, aArray);
+						} else {
+							let oObject = {};
+							oObject[sPath[h + 1]] = undefined;
+							this.setProperty(sConcatPath, oObject);
+						}
+					}
+				}
+			}
+		},
+
 		/**
 		 * @function refreshEntity
 		 * @public
@@ -357,15 +427,20 @@ sap.ui.define([
 					sEntitySet = sEntitySet.substring(1).slice(0, sEntitySet.substring(1).lastIndexOf("/"));
 
 					if (this._oKeysForEntitySet[sEntitySet]) {
-						let oEntity = this.getData()[sEntitySet].find(e => e[this._oKeysForEntitySet[sEntitySet]] === oData.data[this._oKeysForEntitySet[
-							sEntitySet]]);
+						if (this.getData()[sEntitySet]) {
+							let oEntity = this.getData()[sEntitySet].find(e => e[this._oKeysForEntitySet[sEntitySet]] === oData.data[this._oKeysForEntitySet[
+								sEntitySet]]);
 
-						if (oEntity) {
-							let iIdx = this.getData()[sEntitySet].indexOf(oEntity);
+							if (oEntity) {
+								let iIdx = this.getData()[sEntitySet].indexOf(oEntity);
 
-							this.getData()[sEntitySet][iIdx] = oData.data;
+								this.getData()[sEntitySet][iIdx] = oData.data;
+							} else {
+
+								this.getData()[sEntitySet].unshift(oData.data);
+							}
 						} else {
-							this.getData()[sEntitySet].unshift(oData.data);
+							this.getData()[sEntitySet] = [oData.data];
 						}
 
 						this._logger.info("Entity refreshed");
@@ -422,6 +497,10 @@ sap.ui.define([
 
 			return new sap.ui.model.json.JSONListBinding(this, sPath, oContext, aSorters, aFilters, mParameters);
 		},
+
+		/*bindContext: function (sPath, oContext, mParameters, oEvents) {
+			return new sap.ui.model.ContextBinding(sPath, oContext, mParameters, oEvents);
+		},*/
 
 		/**
 		 * @function create - Calls RestModel.create

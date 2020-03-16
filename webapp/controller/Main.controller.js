@@ -20,7 +20,7 @@ sap.ui.define([
 			this._oTestModel = new CloudDNAModel(
 				"https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/api", {
 					keysForEntitySet: {
-						"todos": "id"
+						"comments": "id"
 					}
 				});
 

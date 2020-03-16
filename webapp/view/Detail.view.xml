@@ -1,0 +1,27 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" controllerName="at.clouddna.axiostest.controller.Detail"
+	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form">
+	<Page title="Detail">
+		<content>
+			<f:SimpleForm editable="true" layout="ResponsiveGridLayout" title="{title}" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+				adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+				singleContainerFullSize="false">
+				<f:content>
+					<Label text="User ID"/>
+					<Input value="{userId}"/>
+					<Label text="ID"/>
+					<Input value="{id}"/>
+					<Label text="Title"/>
+					<Input value="{title}"/>
+					<Label text="Completed"/>
+					<CheckBox selected="{completed}"/>
+				</f:content>
+			</f:SimpleForm>
+		</content>
+		<footer>
+			<Toolbar>
+				<ToolbarSpacer/>
+				<Button text="Speichern" press="onSavePress" type="Accept"/>
+			</Toolbar>
+		</footer>
+	</Page>
+</mvc:View>

@@ -25,6 +25,22 @@ sap.ui.define([
 				});
 
 			this.getView().setModel(this._oTestModel, "cloudDNAModel");
+
+			this._oTestModel.read("/blogs", {
+				sendSkipTop: false,
+				//select: ["CustomerId", "Firstname"],
+				//orderby: ["Firstname desc"],
+				restUrlParameters: {
+					param1: "param1",
+					param2: "param2"
+				},
+				success: function (oData) {
+					oCodeEditor.setValue(JSON.stringify(oData, null, "\t"));
+				}.bind(this),
+				error: function (oError) {
+
+				}.bind(this)
+			});
 		},
 
 		onSubmitChangesPress: function () {
@@ -47,6 +63,10 @@ sap.ui.define([
 				sendSkipTop: false,
 				//select: ["CustomerId", "Firstname"],
 				//orderby: ["Firstname desc"],
+				restUrlParameters: {
+					param1: "param1",
+					param2: "param2"
+				}
 				success: function (oData) {
 					oCodeEditor.setValue(JSON.stringify(oData, null, "\t"));
 				}.bind(this),

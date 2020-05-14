@@ -3,7 +3,7 @@ sap.ui.define([
 	"sap/ui/base/Object",
 	"at/clouddna/axiostest/libs/axios",
 	"sap/base/Log"
-], function (Object, axiosjs, Log) {
+], function (BaseObject, axiosjs, Log) {
 	"use strict";
 
 	/**
@@ -11,7 +11,7 @@ sap.ui.define([
 	 * @author Maximilian  Olzinger [maximilian.olzinger@clouddna.at]
 	 * @version 1.0
 	 */
-	return Object.extend("at.clouddna.axiostest.libs.ODataRestModel", {
+	return BaseObject.extend("at.clouddna.axiostest.libs.ODataRestModel", {
 		_axiosInstance: null,
 		_sXSRFToken: "",
 
@@ -27,7 +27,7 @@ sap.ui.define([
 		 * @param {boolean} [oConfig.xcsrfTokenHandling=false] - Request headers.
 		 */
 		constructor: function (oConfig) {
-			Object.call(this);
+			BaseObject.call(this);
 
 			//if no configuration was provided, throw an exception
 			if (oConfig === undefined) {
@@ -150,9 +150,9 @@ sap.ui.define([
 						oRestParams = oParameters.restUrlParameters,
 						aRestParams = [];
 
-					for (let sKey in Object.keys(oRestParams)) {
+					Object.keys(oRestParams).forEach(function (sKey) {
 						aRestParams.push(sKey + "=" + oRestParams[sKey]);
-					}
+					});
 
 					sRestParams = aRestParams.join("&");
 

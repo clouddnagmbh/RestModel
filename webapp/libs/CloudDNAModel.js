@@ -319,6 +319,9 @@ sap.ui.define([
 			//this._buildObjectFromPath("/blogs/comment/5/2/test", ["test1", "test2"]);
 
 			this._restModel.read(sPath, {
+				restUrlParameters: {
+					param1: "testparam"
+				},
 				success: function (oData) {
 					this._buildObjectFromPath(sPath, oData.data);
 

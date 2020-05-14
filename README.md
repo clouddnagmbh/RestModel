@@ -1,27 +1,16 @@
 # CloudDNA Rest-Model
-Beschreibung des CloudDNA RESTModels auf Basis von [axios](https://github.com/axios/axios).
+Beschreibung des RESTModels auf Basis von [axios](https://github.com/axios/axios).
 
 # Installation
 
-Für die Installation des CloudDNAModels werden folgende files benötigt:
+Für die Installation des RestModels werden folgende files benötigt:
 
  1. [ axios.js](https://github.com/ksicgmbh/RestModel/blob/master/webapp/libs/axios.js)
  2. [RestModel.js](https://github.com/ksicgmbh/RestModel/blob/master/webapp/libs/RestModel.js)
- 3. [CloudDNAModel.js](https://github.com/ksicgmbh/RestModel/blob/master/webapp/libs/CloudDNAModel.js)
 
 Diese Files werden in dem UI5-Projekt in den **webapp**-Folder in einen neuen Ordner eingefügt. Der Ordnername kann frei vergeben werden.
 
-Anschließend müssen noch die Pfade auf die Verweise der anderen .js Files in zwei Files angepasst werden.
-
-***CloudDNAModel.js***
-
-    sap.ui.define([
-    	"sap/ui/model/json/JSONModel",
-    	"myfolderpath/libs/RestModel",
-    	"sap/base/Log"
-    ], function (JSONModel, RestModel, Log) {
-    ...
-    }
+Anschließend muss noch der Pfad auf den Verweis zum axios-File in dem RestModel-File angepasst werden.
 
 ***RestModel.js***
 
@@ -58,6 +47,23 @@ Ein Beispiel hierfür wäre:
     				url: "https://webidetestingxxxxxx-exxxxxxx.dispatcher.eu2.hana.ondemand.com/api",
     			});
 
+
+
+## Zugriff per Destination
+Um den Auslieferungszugriff zu erleichtern und nicht auf die webidetesting-Url angewiesen zu sein, kann in der neo-app.json ein **Mapping** zwischen einem **Pfad** und einer in der Cloud Platform existierender **Destination** hergestellt werden.
+Dazu einen neuen Eintrag in dem **routes**-Array erstellen.
+
+
+     {
+    	"path": "/api",
+    	"target": {
+    		"type": "destination",
+    		"name": "MyDestination"
+    	},
+    	"description": "My Destination"
+    }
+
+Anschließend kann das RestModel mit der URL **"/api**" erstellt werden und man ist nicht mehr von der webidetesting-Url abhängig.
 
 
 ## create
@@ -176,6 +182,20 @@ Ein Beispiel hierfür wäre:
   				}
   	});
 
+## bearerTokenLogin
+Mit dieser Funktion lässt sich einfach das Bearer-Token setzen. Es müssen nur Username, Passwort und eine URL, wo der Token herkommt, mitgegeben werden. Die Funktion setzt dann den **Authorization**-Token, der für die weiteren Requests verwendet wird.
+
+    oModel.bearerTokenLogin: function (sUrl, sUsername, sPassword, oParameters) 
+    
+    //parameters
+    sUrl = {string} - Url for login.
+    sUsername = {string} - Username.
+    sPassword = {string} - Password.
+    oParameters = {
+	    success = {function}  - Success-callback function.
+	    error = {function}  - Error-callback function.
+    }
+
 ## setXCSRFTokenHandling
 Über diese Funktion lässt sich das **X-CSRF-Tokenhandling** ein- oder ausschalten. Hierbei wird zuerst ein GET-Request mit einem Header namens **"X-CSRF-Token": "fetch"** geschickt. Das Restultat dieses Request beinhaltet das entsprechende X-CSRF-Token, das nun als Request-Header für alle CRUD-Requests eingesetzt wird.
 
@@ -216,10 +236,6 @@ Löscht einen Default-Request-Header aus dem Header-Objekt.
 		 
     //returns
     returns {string} sPath - Returns the path if no error was thrown.
-
-# CloudDNAModel
-
-.... Coming soon...
 
 
 

@@ -1,16 +1,26 @@
 # CloudDNA Rest-Model
-Beschreibung des RESTModels auf Basis von [axios](https://github.com/axios/axios).
+Description of the CloudDNA Rest Model based on [axios](https://github.com/axios/axios).
 
 # Installation
 
-Für die Installation des RestModels werden folgende files benötigt:
+Following 2 Files are needed in order to install the CloudDNA Rest Model.
 
  1. [ axios.js](https://github.com/ksicgmbh/RestModel/blob/master/webapp/libs/axios.js)
  2. [RestModel.js](https://github.com/ksicgmbh/RestModel/blob/master/webapp/libs/RestModel.js)
 
-Diese Files werden in dem UI5-Projekt in den **webapp**-Folder in einen neuen Ordner eingefügt. Der Ordnername kann frei vergeben werden.
+These files need to be placed in the **webapp** folder (can be placed in an subordinate folder). 
 
-Anschließend muss noch der Pfad auf den Verweis zum axios-File in dem RestModel-File angepasst werden.
+After that, the resource path in the **RestModel.js** needs to be changed in order to match the new folder structure.
+
+***CloudDNAModel.js***
+
+    sap.ui.define([
+    	"sap/ui/model/json/JSONModel",
+    	"myfolderpath/libs/RestModel",
+    	"sap/base/Log"
+    ], function (JSONModel, RestModel, Log) {
+    ...
+    }
 
 ***RestModel.js***
 
@@ -22,18 +32,17 @@ Anschließend muss noch der Pfad auf den Verweis zum axios-File in dem RestModel
     ], function (Object, axiosjs, Log) {
 
 # RESTModel
+All CRUD-Functionalities of the Rest model return a promise containing the result or can be called by providing an **Success-/Error-Callback**. When no callbacks are defined in the Parameter-Object of the corresponding call, a Promise is returned, which can be processed by using ***oPomise.then(fnSuccess, fnError)*** or ***oPromise.then(fnSuccess).catch(fnError)*** .
 
-Alle CRUD-Funktionen des RESTModels liefern entweder einen **Pomise** zurück oder können einen **Success-/Error-Callback** bekommen. Sobald in dem Parameter-Objekt einer CRUD-Funktion keine Callback-Funktion definiert wird, wird ein Promise zurückgeliefert, der mit ***oPomise.then(fnSuccess, fnError)*** oder ***oPromise.then(fnSuccess).catch(fnError)*** abgearbeitet werden kann.
+In addition, the RESTModel supports **X-CSRF-Tokenhandling**. This can be enabled by simply providing the ***xcsrfTokenHandling***-Parameter when instantiating a new RESTModel or by calling the ***setXCSRFTokenHandling***-Method.
 
-Das RESTModel unterstützt außerdem noch **X-CSRF-Tokenhandling**. Dieses kann entweder bei der Erstellung einer neuen RESTModel-Instanz per Parameter ***xcsrfTokenHandling*** oder zur Laufzeit mit der Funktion ***setXCSRFTokenHandling(true/false)*** eingestellt werden.
+**Request-Header** which should be applied in general can be added and removed by calling ***addHeader*** or ***removeHeader***.
 
-**Request-Header**, die für jeden Request gehen, können mit der Funktion ***addHeader***, bzw. mit ***removeHeader*** hinzugefürt, bzw. gelöscht werden.
-
-## Instanz erstellen
-Um das RestModel benutzen zu können, muss eine neue Instanz erstellt werden.
-
-    new RestModel(oConfig)
-
+## Instantiating
+To use the RESTModel, a new instance needs to be created which consumes starting parameters.
+    
+	new RestModel(oConfig)
+	
     oConfig = {
 	    {string} url - URL of REST-Client.
 		{number} [timeout=5000] - Reqest timeout.
@@ -41,17 +50,15 @@ Um das RestModel benutzen zu können, muss eine neue Instanz erstellt werden.
 		{boolean} [xcsrfTokenHandling=false] - Request headers.
     }
 
-Ein Beispiel hierfür wäre:
+An example would be:
 
     this._oModel = new RestModel({
     				url: "https://webidetestingxxxxxx-exxxxxxx.dispatcher.eu2.hana.ondemand.com/api",
     			});
 
 
-
-## Zugriff per Destination
-Um den Auslieferungszugriff zu erleichtern und nicht auf die webidetesting-Url angewiesen zu sein, kann in der neo-app.json ein **Mapping** zwischen einem **Pfad** und einer in der Cloud Platform existierender **Destination** hergestellt werden.
-Dazu einen neuen Eintrag in dem **routes**-Array erstellen.
+## Access via Destination
+To use a **Cloud Platform Destination**, an entry referring to said Destination needs to be created in the **neo-app.json**. This Entry serves as a **mapping** between the Destination and an entry-path, which is used as **base-path/url** in the RESTModel.
 
 
      {
@@ -63,12 +70,9 @@ Dazu einen neuen Eintrag in dem **routes**-Array erstellen.
     	"description": "My Destination"
     }
 
-Anschließend kann das RestModel mit der URL **"/api**" erstellt werden und man ist nicht mehr von der webidetesting-Url abhängig.
-
-
+After adding a mapping in the neo-app.json, the value of the path-property can be used when instantiating a new RESTModel.
 ## create
-Die **create**-Methode des RESTModes benutzt die HTTP **POST**-Funktion, um neue Daten per REST-Call zu speichern.
-
+The **create**-Method of the RESTModes uses HTTP **POST** to create new entries.
 
     oModel.create(sPath, sObject, oParameters)
 
@@ -85,7 +89,7 @@ Die **create**-Methode des RESTModes benutzt die HTTP **POST**-Funktion, um neue
 	returns {promise} [oPromise] - returns promise if no success- or error-callback was specified.
 
 
-Ein Beispiel hierfür wäre:
+An example would be:
 
     this._oModel.create("/Customer", {
 		    Firstname: "John",
@@ -98,7 +102,7 @@ Ein Beispiel hierfür wäre:
 
 ## read
 
-Die **read**-Methode des RESTModels benützt die HTTP **GET**-Funktion, um Daten zu laden.
+The **read**-Method of the RESTModels uses HTTP **GET** to read external data.
 
     oModel.read(sPath, oParameters) 
     
@@ -119,7 +123,7 @@ Die **read**-Methode des RESTModels benützt die HTTP **GET**-Funktion, um Daten
 	
 	//returns 
 	returns {promise} [oPromise] - returns promise if no success- or error-callback was specified.
-Ein Beispiel hierfür wäre:
+An example would be:
 
     this._oModel.read("/Customer", {
 	     success: function (oData) { 
@@ -128,7 +132,7 @@ Ein Beispiel hierfür wäre:
 	});
 
 ## update
-Die **update**-Methode des RESTModels benützt die HTTP **PUT**-Funktion, um bestehende Datensätze zu ändern.
+The **update**-Method of the RESTModels uses HTTP **PUT** to alter external data.
 
     oModel.update(sPath, oObject, oParameters)
     
@@ -144,7 +148,7 @@ Die **update**-Methode des RESTModels benützt die HTTP **PUT**-Funktion, um bes
 	//returns 
 	returns {promise} [oPromise] - returns promise if no success- or error-callback was specified.
 
-Ein Beispiel hierfür wäre:
+An example would be:
 
     this._oModel.update(/Customer/7, JSON.parse(oBody.getValue()), {
  			success: function (oData) {
@@ -156,7 +160,7 @@ Ein Beispiel hierfür wäre:
  	});
 
 ## remove
-Die **remove**-Methode des RESTModels benützt die HTTP **DELETE**-Funktion, um bestehende Datensätze zu löschen.
+The **remove**-Method of the RESTModels uses HTTP **DELETE** to remove data.
 
     oModel.remove(sPath, oParameters)
     
@@ -171,7 +175,7 @@ Die **remove**-Methode des RESTModels benützt die HTTP **DELETE**-Funktion, um 
 	//returns 
 	returns {promise} [oPromise] - returns promise if no success- or error-callback was specified.
 
-Ein Beispiel hierfür wäre:
+An example would be:
 
     this._oModel.remove(/Customer/1, {
   				success: function (oData) {
@@ -183,7 +187,8 @@ Ein Beispiel hierfür wäre:
   	});
 
 ## bearerTokenLogin
-Mit dieser Funktion lässt sich einfach das Bearer-Token setzen. Es müssen nur Username, Passwort und eine URL, wo der Token herkommt, mitgegeben werden. Die Funktion setzt dann den **Authorization**-Token, der für die weiteren Requests verwendet wird.
+
+By using the **bearerTokenLogin**-Method, one can authenticate himself against provided service. After the authorization passed successfully, the **Authorization**-Token is fetched and set  for further requests. (Service must provide a Bearer Token).
 
     oModel.bearerTokenLogin: function (sUrl, sUsername, sPassword, oParameters) 
     
@@ -195,9 +200,10 @@ Mit dieser Funktion lässt sich einfach das Bearer-Token setzen. Es müssen nur 
 	    success = {function}  - Success-callback function.
 	    error = {function}  - Error-callback function.
     }
+    
 
 ## setXCSRFTokenHandling
-Über diese Funktion lässt sich das **X-CSRF-Tokenhandling** ein- oder ausschalten. Hierbei wird zuerst ein GET-Request mit einem Header namens **"X-CSRF-Token": "fetch"** geschickt. Das Restultat dieses Request beinhaltet das entsprechende X-CSRF-Token, das nun als Request-Header für alle CRUD-Requests eingesetzt wird.
+This method en- or disables **X-CSRF-Tokenhandling**. The Model sends a GET-Request with the **"X-CSRF-Token": "fetch"**-Header. The Result of the Requets is set as CSRF-token which is used as an header attribute for further requests.
 
     oModel.setXCSRFTokenHandling(bSetSecurityHeader)
     
@@ -205,18 +211,18 @@ Mit dieser Funktion lässt sich einfach das Bearer-Token setzen. Es müssen nur 
     bSetSecurityHeader = {boolean} bSetSecurityHeader - Enable X-CSRF-Tokenhandling
 
 ## addHeader
-Fügt einen neuen Default-Request-Header hinzu.
+Adds a new default header.
 
-    oModel.addHeader(sHeaderName, sHeaderValue)
+    oModel.addHeader(oHeader)
     
     //parameters
     oHeader = {
-		 {string} sHeaderName - Header-Name.
-		 {string} sHeaderValue - Header-Value.
+		 {string} name - Header-Name.
+		 {value} value - Header-Value.
 	}
 
 ## removeHeader
-Löscht einen Default-Request-Header aus dem Header-Objekt.
+Removes a default header.
 
     oModel.removeHeader(sHeaderName)
     
@@ -227,7 +233,7 @@ Löscht einen Default-Request-Header aus dem Header-Objekt.
 	returns {boolean} - Entry deleted or not.
 
 ## checkPath
-Überprüft, ob ein übergebene URI ein semantisch korrekter Pfad ist.
+Checks, if the given Path is syntactically correct. Is called by all RESTModel-Requests.
 
     oModel.checkPath(sPath)
     
@@ -237,5 +243,6 @@ Löscht einen Default-Request-Header aus dem Header-Objekt.
     //returns
     returns {string} sPath - Returns the path if no error was thrown.
 
-
+# Credits
+Credits to Matt Zabriskie and his wonderfull [axios-Model](https://github.com/axios/axios). Please check out his work for more Details about the axios-Model.
 

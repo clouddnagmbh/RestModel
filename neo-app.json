@@ -37,14 +37,6 @@
 		},
 		"description": "SAPUI5 Test Resources"
 	}, {
-		"path": "/sap/opu/odata",
-		"target": {
-			"type": "destination",
-			"name": "ZHOFIO_CUSTOMER_SRV",
-			"entryPath": "/sap/opu/odata"
-		},
-		"description": "HOFIO Customer Service"
-	}, {
 		"path": "/api",
 		"target": {
 			"type": "destination",

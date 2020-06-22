@@ -13,15 +13,7 @@
 			"id": "servicecatalog.connectivityComponentForManifest",
 			"version": "0.0.0"
 		},
-		"dataSources": {
-			"ZHOFIO_CUSTOMER_SRV": {
-				"uri": "/sap/opu/odata/sap/ZHOFIO_CUSTOMER_SRV/",
-				"type": "OData",
-				"settings": {
-					"localUri": "localService/metadata.xml"
-				}
-			}
-		}
+		"dataSources": {}
 	},
 	"sap.ui": {
 		"technology": "UI5",
@@ -65,16 +57,6 @@
 				"settings": {
 					"bundleName": "at.clouddna.axiostest.i18n.i18n"
 				}
-			},
-			"": {
-				"type": "sap.ui.model.odata.v2.ODataModel",
-				"settings": {
-					"defaultOperationMode": "Server",
-					"defaultBindingMode": "OneWay",
-					"defaultCountMode": "Request"
-				},
-				"dataSource": "ZHOFIO_CUSTOMER_SRV",
-				"preload": true
 			}
 		},
 		"resources": {
@@ -96,18 +78,6 @@
 				"name": "RouteApp",
 				"pattern": "RouteApp",
 				"target": ["TargetApp"]
-			}, {
-				"name": "Main",
-				"pattern": "",
-				"titleTarget": "",
-				"greedy": false,
-				"target": ["Master"]
-			}, {
-				"name": "Detail",
-				"pattern": "detail/{id}",
-				"titleTarget": "",
-				"greedy": false,
-				"target": ["Detail"]
 			}],
 			"targets": {
 				"TargetApp": {
@@ -116,21 +86,6 @@
 					"clearControlAggregation": false,
 					"viewId": "App",
 					"viewName": "App"
-				},
-				"Main": {
-					"viewType": "XML",
-					"viewName": "Main",
-					"controlAggregation": "pages"
-				},
-				"Master": {
-					"viewType": "XML",
-					"viewName": "Master",
-					"controlAggregation": "pages"
-				},
-				"Detail": {
-					"viewType": "XML",
-					"viewName": "Detail",
-					"controlAggregation": "pages"
 				}
 			}
 		}

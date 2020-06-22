@@ -244,5 +244,5 @@ Checks, if the given Path is syntactically correct. Is called by all RESTModel-R
     returns {string} sPath - Returns the path if no error was thrown.
 
 # Credits
-Credits to Matt Zabriskie and his wonderfull [axios-Model](https://github.com/axios/axios). Please check out his work for more Details about the axios-Model.
+Credits to Matt Zabriskie and his wonderful [axios-Model](https://github.com/axios/axios). Please check out his work for more Details about the axios-Model.
 

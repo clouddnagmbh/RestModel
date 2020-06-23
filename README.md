@@ -8,7 +8,7 @@ The RestModel makes working with **REST-Services** in SAP UI5 a lot easier by pr
 
 Following 2 Files are needed in order to install the CloudDNA Rest Model.
 
- 1. [ axios.js](https://github.com/ksicgmbh/RestModel/blob/master/webapp/libs/axios.js)
+ 1. [axios.js](https://github.com/ksicgmbh/RestModel/blob/master/webapp/libs/axios.js)
  2. [RestModel.js](https://github.com/ksicgmbh/RestModel/blob/master/webapp/libs/RestModel.js)
 
 These files need to be placed in the **webapp** folder (can be placed in an subordinate folder). 
@@ -17,22 +17,26 @@ After that, the resource path in the **RestModel.js** needs to be changed in ord
 
 ***CloudDNAModel.js***
 
-    sap.ui.define([
-    	"sap/ui/model/json/JSONModel",
-    	"myfolderpath/libs/RestModel",
-    	"sap/base/Log"
-    ], function (JSONModel, RestModel, Log) {
-    ...
-    }
+```js 
+sap.ui.define([
+	"sap/ui/model/json/JSONModel",
+	"myfolderpath/libs/RestModel",
+	"sap/base/Log"
+], function (JSONModel, RestModel, Log) {
+...
+}
+```
 
 ***RestModel.js***
 
-    /* global axios:true */
-    sap.ui.define([
-    	"sap/ui/base/Object",
-    	"myfolderpath/axios",
-    	"sap/base/Log"
-    ], function (Object, axiosjs, Log) {
+```js 
+/* global axios:true */
+sap.ui.define([
+	"sap/ui/base/Object",
+	"myfolderpath/axios",
+	"sap/base/Log"
+], function (Object, axiosjs, Log) {
+```
 
 # RESTModel
 All CRUD-Functionalities of the Rest model return a promise containing the result or can be called by providing an **Success-/Error-Callback**. When no callbacks are defined in the Parameter-Object of the corresponding call, a Promise is returned, which can be processed by using ***oPomise.then(fnSuccess, fnError)*** or ***oPromise.then(fnSuccess).catch(fnError)*** .
@@ -43,9 +47,9 @@ In addition, the RESTModel supports **X-CSRF-Tokenhandling**. This can be enable
 
 ## Instantiating
 To use the RESTModel, a new instance needs to be created which consumes starting parameters.
-    
+
 	new RestModel(oConfig)
-	
+
     oConfig = {
 	    {string} url - URL of REST-Client.
 		{number} [timeout=5000] - Reqest timeout.
@@ -55,23 +59,25 @@ To use the RESTModel, a new instance needs to be created which consumes starting
 
 An example would be:
 
-    this._oModel = new RestModel({
-    				url: "https://webidetestingxxxxxx-exxxxxxx.dispatcher.eu2.hana.ondemand.com/api",
-    			});
-
+```js 
+this._oModel = new RestModel({
+				url: "https://webidetestingxxxxxx-exxxxxxx.dispatcher.eu2.hana.ondemand.com/api",
+			});
+```
 
 ## Access via Destination
 To use a **Cloud Platform Destination**, an entry referring to said Destination needs to be created in the **neo-app.json**. This Entry serves as a **mapping** between the Destination and an entry-path, which is used as **base-path/url** in the RESTModel.
 
-
-     {
-    	"path": "/api",
-    	"target": {
-    		"type": "destination",
-    		"name": "MyDestination"
-    	},
-    	"description": "My Destination"
-    }
+```json
+{
+	"path": "/api",
+	"target": {
+		"type": "destination",
+		"name": "MyDestination"
+	},
+	"description": "My Destination"
+}
+```
 
 After adding a mapping in the neo-app.json, the value of the path-property can be used when instantiating a new RESTModel.
 ## create
@@ -94,21 +100,23 @@ The **create**-Method of the RESTModes uses HTTP **POST** to create new entries.
 
 An example would be:
 
-    this._oModel.create("/Customer", {
-		    Firstname: "John",
-		    Lastname: "Doe"
-	    },{
-		success: function (oData) {
-			oCodeEditor.setValue(JSON.stringify(oData, null, "\t"));
-		}.bind(this)
-	});
+```js
+this._oModel.create("/Customer", {
+		Firstname: "John",
+		Lastname: "Doe"
+	},{
+	success: function (oData) {
+		oCodeEditor.setValue(JSON.stringify(oData, null, "\t"));
+	}.bind(this)
+});
+```
 
 ## read
 
 The **read**-Method of the RESTModels uses HTTP **GET** to read external data.
 
-    oModel.read(sPath, oParameters) 
-    
+    oModel.read(sPath, oParameters)
+
     //parameters
     sPath = {string} sPath - Path to a ressource, absolute to the set base-url.
 	oParameters = {
@@ -126,19 +134,23 @@ The **read**-Method of the RESTModels uses HTTP **GET** to read external data.
 	
 	//returns 
 	returns {promise} [oPromise] - returns promise if no success- or error-callback was specified.
+
+
 An example would be:
 
-    this._oModel.read("/Customer", {
-	     success: function (oData) { 
-		     oCodeEditor.setValue(JSON.stringify(oData, null, "\t")); 
-		 }.bind(this) 
-	});
+```js 
+this._oModel.read("/Customer", {
+		success: function (oData) { 
+			oCodeEditor.setValue(JSON.stringify(oData, null, "\t")); 
+		}.bind(this) 
+});
+```
 
 ## update
 The **update**-Method of the RESTModels uses HTTP **PUT** to alter external data.
 
     oModel.update(sPath, oObject, oParameters)
-    
+
 	//parameters
     sPath = {string} sPath - Path where a new ressource should be added.
 	oObject = {object} sObject - Data which should be posted. 
@@ -153,20 +165,22 @@ The **update**-Method of the RESTModels uses HTTP **PUT** to alter external data
 
 An example would be:
 
-    this._oModel.update(/Customer/7, JSON.parse(oBody.getValue()), {
- 			success: function (oData) {
- 				oResponse.setValue(JSON.stringify(oData, null, "\t"));
- 			},
- 			error: function (oError) {
- 				oResponse.setValue(oError);
- 			}
- 	});
+```js
+this._oModel.update(/Customer/7, JSON.parse(oBody.getValue()), {
+		success: function (oData) {
+			oResponse.setValue(JSON.stringify(oData, null, "\t"));
+		},
+		error: function (oError) {
+			oResponse.setValue(oError);
+		}
+});
+```
 
 ## remove
 The **remove**-Method of the RESTModels uses HTTP **DELETE** to remove data.
 
     oModel.remove(sPath, oParameters)
-    
+
     //parameters
     sPath = {string} sPath - Path where a new ressource should be added.
 	oParameters = {object} {
@@ -180,21 +194,23 @@ The **remove**-Method of the RESTModels uses HTTP **DELETE** to remove data.
 
 An example would be:
 
-    this._oModel.remove(/Customer/1, {
-  				success: function (oData) {
-  					oResponse.setValue(JSON.stringify(oData, null, "\t"));
-  				},
-  				error: function (oError) {
-  					oResponse.setValue(oError);
-  				}
-  	});
+```js
+this._oModel.remove(/Customer/1, {
+			success: function (oData) {
+				oResponse.setValue(JSON.stringify(oData, null, "\t"));
+			},
+			error: function (oError) {
+				oResponse.setValue(oError);
+			}
+});
+```
 
 ## bearerTokenLogin
 
 By using the **bearerTokenLogin**-Method, one can authenticate himself against provided service. After the authorization passed successfully, the **Authorization**-Token is fetched and set  for further requests. (Service must provide a Bearer Token).
 
     oModel.bearerTokenLogin: function (sUrl, sUsername, sPassword, oParameters) 
-    
+
     //parameters
     sUrl = {string} - Url for login.
     sUsername = {string} - Username.
@@ -209,7 +225,7 @@ By using the **bearerTokenLogin**-Method, one can authenticate himself against p
 This method en- or disables **X-CSRF-Tokenhandling**. The Model sends a GET-Request with the **"X-CSRF-Token": "fetch"**-Header. The Result of the Requets is set as CSRF-token which is used as an header attribute for further requests.
 
     oModel.setXCSRFTokenHandling(bSetSecurityHeader)
-    
+
     //parameters
     bSetSecurityHeader = {boolean} bSetSecurityHeader - Enable X-CSRF-Tokenhandling
 
@@ -217,7 +233,7 @@ This method en- or disables **X-CSRF-Tokenhandling**. The Model sends a GET-Requ
 Adds a new default header.
 
     oModel.addHeader(oHeader)
-    
+	
     //parameters
     oHeader = {
 		 {string} name - Header-Name.
@@ -228,9 +244,9 @@ Adds a new default header.
 Removes a default header.
 
     oModel.removeHeader(sHeaderName)
-    
+
     //parameters
-    sHeaderName = string} sHeaderName - Header-Name.
+    sHeaderName = {string} sHeaderName - Header-Name.
     
     //returns
 	returns {boolean} - Entry deleted or not.
@@ -239,7 +255,7 @@ Removes a default header.
 Checks, if the given Path is syntactically correct. Is called by all RESTModel-Requests.
 
     oModel.checkPath(sPath)
-    
+
     //parameters
     sPath = {string} sPath - Absolute path to ressource.
 		 

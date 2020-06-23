@@ -80,6 +80,7 @@ To use a **Cloud Platform Destination**, an entry referring to said Destination 
 ```
 
 After adding a mapping in the neo-app.json, the value of the path-property can be used when instantiating a new RESTModel.
+
 ## create
 The **create**-Method of the RESTModes uses HTTP **POST** to create new entries.
 
@@ -112,7 +113,6 @@ this._oModel.create("/Customer", {
 ```
 
 ## read
-
 The **read**-Method of the RESTModels uses HTTP **GET** to read external data.
 
     oModel.read(sPath, oParameters)
@@ -206,7 +206,6 @@ this._oModel.remove(/Customer/1, {
 ```
 
 ## bearerTokenLogin
-
 By using the **bearerTokenLogin**-Method, one can authenticate himself against provided service. After the authorization passed successfully, the **Authorization**-Token is fetched and set  for further requests. (Service must provide a Bearer Token).
 
     oModel.bearerTokenLogin: function (sUrl, sUsername, sPassword, oParameters) 
@@ -233,7 +232,7 @@ This method en- or disables **X-CSRF-Tokenhandling**. The Model sends a GET-Requ
 Adds a new default header.
 
     oModel.addHeader(oHeader)
-	
+
     //parameters
     oHeader = {
 		 {string} name - Header-Name.

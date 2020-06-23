@@ -26,20 +26,7 @@ sap.ui.define([
 
 			// set the device model
 			this.setModel(models.createDeviceModel(), "device");
-
-			//setUp Master-Detail-Model
-			let oModel = new CloudDNAModel(
-				"https://webidetesting7978545-ed926da1b.dispatcher.eu2.hana.ondemand.com/api", {
-					keysForEntitySet: {
-						"comments": "id"
-					}
-				});
-
-			this.setModel(oModel);
-
-			/*sap.ui.require(["https://cdn.jsdelivr.net/npm/axios/dist/axios.min"], function (axios) {
-
-			});*/
 		}
+
 	});
 });

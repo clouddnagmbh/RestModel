@@ -1,6 +1,9 @@
 # CloudDNA Rest-Model
 Description of the CloudDNA Rest Model based on [axios](https://github.com/axios/axios).
 
+# Introduction
+The RestModel makes working with **REST-Services** in SAP UI5 a lot easier by providing semantically known functions in order to help to call CRUD-Functions. The method-names and parameters are based on **ODataModel**-Methods to make working with the RestModel more familiar.
+
 # Installation
 
 Following 2 Files are needed in order to install the CloudDNA Rest Model.
@@ -242,6 +245,12 @@ Checks, if the given Path is syntactically correct. Is called by all RESTModel-R
 		 
     //returns
     returns {string} sPath - Returns the path if no error was thrown.
+    
+# Additional Infos
+
+ - [Contribution Guide](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project)
+ - [Code of Conduct](https://github.com/ksicgmbh/RestModel/blob/master/contribution.md)
+ - [MIT License](https://github.com/ksicgmbh/RestModel/blob/master/LICENSE)
 
 # Credits
 Credits to Matt Zabriskie and his wonderful [axios-Model](https://github.com/axios/axios). Please check out his work for more Details about the axios-Model.

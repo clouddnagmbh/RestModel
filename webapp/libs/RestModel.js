@@ -11,7 +11,7 @@ sap.ui.define([
 	 * @author Maximilian  Olzinger [maximilian.olzinger@clouddna.at]
 	 * @version 1.0
 	 */
-	return BaseObject.extend("at.clouddna.axiostest.libs.RestModel", {
+	return BaseObject.extend("at.clouddna.axiostest.libs.TESTRestModel", {
 		_axiosInstance: null,
 		_sXSRFToken: "",
 

@@ -81,12 +81,12 @@ sap.ui.define([
 			//if no callback function was provided, return a promise
 			if (bReturnPromise) {
 				this._logger.info("POST - sent (promise)");
-				return this._axiosInstance.post(sPath, oObject || {}, oHeaders);
+				return this._axiosInstance.post(sPath, oObject || {}, { headers: oHeaders });
 			}
 
 			//create with callback functions
 			this._logger.info("POST - sent (callback)");
-			this._axiosInstance.post(sPath, oObject || {}, oHeaders).then(fnSuccess, fnError);
+			this._axiosInstance.post(sPath, oObject || {}, { headers: oHeaders }).then(fnSuccess, fnError);
 		},
 
 		/**
@@ -166,12 +166,12 @@ sap.ui.define([
 			//if no callback function was provided, return a promise
 			if (bReturnPromise) {
 				this._logger.info("GET - sent on '" + sPath + "'(promise)");
-				return this._axiosInstance.get(sPath, oHeaders);
+				return this._axiosInstance.get(sPath, { headers: oHeaders });
 			}
 
 			//read with callback functions
 			this._logger.info("GET - sent on '" + sPath + "'(callback)");
-			this._axiosInstance.get(sPath, oHeaders).then(fnSuccess, fnError);
+			this._axiosInstance.get(sPath, { headers: oHeaders }).then(fnSuccess, fnError);
 		},
 
 		/**
@@ -203,12 +203,12 @@ sap.ui.define([
 			//if no callback function was provided, return a promise
 			if (bReturnPromise) {
 				this._logger.info("PUT - sent on '" + sPath + "'(promise)");
-				return this._axiosInstance.put(sPath, oObject || {}, oHeaders);
+				return this._axiosInstance.put(sPath, oObject || {}, { headers: oHeaders });
 			}
 
 			//update with callback functions
 			this._logger.info("PUT - sent on '" + sPath + "'(callback)");
-			this._axiosInstance.put(sPath, oObject || {}, oHeaders).then(fnSuccess, fnError);
+			this._axiosInstance.put(sPath, oObject || {}, { headers: oHeaders }).then(fnSuccess, fnError);
 		},
 
 		/**
@@ -243,12 +243,12 @@ sap.ui.define([
 			//if no callback function was provided, return a promise
 			if (bReturnPromise) {
 				this._logger.info("DELETE - sent on '" + sPath + "'(promise)");
-				return this._axiosInstance.delete(sPath, oHeaders);
+				return this._axiosInstance.delete(sPath, { headers: oHeaders });
 			}
 
 			//remove with callback functions
 			this._logger.info("DELETE - sent on '" + sPath + "'(callback)");
-			this._axiosInstance.delete(sPath, oHeaders).then(fnSuccess, fnError);
+			this._axiosInstance.delete(sPath, { headers: oHeaders }).then(fnSuccess, fnError);
 
 		},
 
